@@ -1,9 +1,12 @@
-name: Laravel CI Test
+name: Laravel CI with Tests
 
 on:
   push:
     branches:
       - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -17,14 +20,23 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
+          extensions: sqlite, pdo_sqlite
 
-      - name: Install Composer Dependencies
+      - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Setup Laravel
+      - name: Setup environment
         run: |
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run basic command
-        run: php artisan --version
+      - name: Setup SQLite database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests
+        run: php artisan test
