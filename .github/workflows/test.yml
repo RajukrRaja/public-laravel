@@ -1,9 +1,7 @@
-name: 🚀 Laravel CI Advanced
+name: Laravel CI Clean
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 env:
@@ -14,40 +12,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐘 Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
           extensions: sqlite, pdo_sqlite
 
-      - name: 📦 Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
 
-      - name: ⚙️ Setup environment
+      - name: Setup environment
         run: |
           cp .env.example .env
           php artisan key:generate
           echo "DB_CONNECTION=sqlite" >> .env
           echo "DB_DATABASE=database/database.sqlite" >> .env
 
-      - name: 🗄️ Setup SQLite DB
+      - name: Setup SQLite DB
         run: |
           mkdir -p database
           touch database/database.sqlite
 
-      - name: 🔄 Run migrations
+      - name: Run migrations
         run: php artisan migrate --force
 
-      - name: 🧪 Run tests
+      - name: Run tests
         run: php artisan test
-
-      - name: 🎨 Code style check (Laravel Pint)
-        run: |
-          if [ -f vendor/bin/pint ]; then
-            vendor/bin/pint --test
-          else
-            echo "Pint not installed"
-          fi
