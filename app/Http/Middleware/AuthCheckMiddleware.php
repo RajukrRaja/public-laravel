@@ -10,12 +10,12 @@ class AuthRoleMiddleware
     {
         $user = session('user');
 
-        // 🔐 Auth check
+        //  Auth check
         if (!$user) {
             return redirect('/login')->with('error', 'Please login first');
         }
 
-        // 👑 Role check (optional)
+        //  Role check 
         if (!empty($roles) && !in_array($user->role, $roles)) {
             abort(403, 'Unauthorized Access');
         }
